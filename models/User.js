@@ -7,7 +7,7 @@ const userSchema = mongoose.Schema({
     },
     email : {
         type : String,
-        trim : true
+        trim : true,
         unique : 1
     },
     password : {
@@ -22,7 +22,7 @@ const userSchema = mongoose.Schema({
         type : Number,
         defualt : 0        
     },
-    image : String
+    image : String,
     token : {
         type : String
     },
