@@ -2,6 +2,9 @@ const express = require('express')
 const app = express()
 const port = 3000
 const bodyParser = require('body-parser');
+
+const config = require('./config/key.js');
+
 const {User} = require("./models/User");
 
 //application/x-www-form-urlencoded데이터를 분석해서 가져올 수 있도록 해줌
@@ -10,7 +13,7 @@ app.use(bodyParser.urlencoded({extended :true}));
 app.use(bodyParser.json());
 
 const mongoose = require('mongoose')
-mongoose.connect('mongodb+srv://ash:1234@boilerplate.wgilg.mongodb.net/boilerplate?retryWrites=true&w=majority',{
+mongoose.connect(config.mongoURI, 'mongodb+srv://ash:1234@boilerplate.wgilg.mongodb.net/boilerplate?retryWrites=true&w=majority',{
   useNewUrlParser: true, useUnitfiedTopology:true, useCreateIndex:true, useFindAndModify:false
 }).then(() => console.log('MongoDB Connected...'))
   .catch(err => console.log(err))
