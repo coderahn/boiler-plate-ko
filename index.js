@@ -4,7 +4,7 @@ const port = 3000
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const config = require('./config/key.js');
-
+const {auth} = require('./middleware/auth');
 const {User} = require("./models/User");
 
 //application/x-www-form-urlencoded데이터를 분석해서 가져올 수 있도록 해줌
@@ -28,7 +28,7 @@ app.get('/', (req, res) => {
 })
 
 //레지스터 라우터 s
-app.post('/register', (req,res) => {
+app.post('/api/users/register', (req,res) => {
   //회원가입할 때 필요한 정보들을 클라이언트에서 가져오면
   //그것들을 데이터 베이스에 넣어준다
   
@@ -46,7 +46,7 @@ app.post('/register', (req,res) => {
 //레지스터 라우터 e
 
 //로그인 라우터 s
-app.post('/login', (req,res) => {
+app.post('/api/users/login', (req,res) => {
   //로그인시 요청한 이메일을 DB에서 찾아야 함
   User.findOne({email : req.body.email}, (err, user) => {
     if(!user){
@@ -72,6 +72,36 @@ app.post('/login', (req,res) => {
 })
 //로그인 라우터 e
 
+//Auth 라우터 s
+app.post('/api/users/auth', auth, (req,res) => {
+  //중간 매개변수 auth는 미드웨어(콜백펑션 하기 전에 중간에 뭘 해주는 역할)
+
+  //여기까지 미들웨어를 통과해 왔다는 얘기는 authentication이 true
+  res.status(200).json({
+    _id : req.user._id,
+    isAdmin : req.user.role === 0 ? false : true,
+    isAuth : true,
+    email : req.user.email,
+    name : req.user.name,
+    lastname : req.user.lastname,
+    role : req.uesr.role,
+    image : req.user.image
+  })
+})
+//Auth 라우터 e
+
+//로그아웃 라우터 s
+app.get('/api/users/logout', auth, (req, res) => {
+  User.findOneAndUpdate({_id : req.user._id},
+    {token : ""},
+    (err, user) => {
+      if(err) return res.json({success : false, err})
+      return res.status(200).send({
+        success:true
+      })
+    })
+})
+//로그아웃 라우터 e
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`)
 })
